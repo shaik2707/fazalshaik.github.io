@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fazal Shaik — Frontend Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --border: #1e1e2e;
+    --accent: #6ee7f7;
+    --accent2: #a78bfa;
+    --accent3: #f472b6;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --tag-bg: #1a1a28;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease-out, width 0.2s, height 0.2s, opacity 0.2s;
+    opacity: 0.5;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.3;
+  }
+
+  /* Nav */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,10,15,0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .nav-links { display: flex; gap: 36px; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 40%, rgba(110,231,247,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 70%, rgba(167,139,250,0.05) 0%, transparent 60%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 20%, transparent 80%);
+  }
+  .hero-content { position: relative; max-width: 900px; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    padding: 8px 16px;
+    border: 1px solid rgba(110,231,247,0.2);
+    border-radius: 2px;
+    background: rgba(110,231,247,0.05);
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-tag::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(52px, 8vw, 100px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero-sub {
+    font-size: 17px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 520px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s 0.2s ease both;
+    font-weight: 400;
+  }
+  .hero-ctas {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .btn-primary {
+    padding: 14px 28px;
+    background: var(--accent);
+    color: #0a0a0f;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    cursor: none;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(110,231,247,0.25); }
+  .btn-ghost {
+    padding: 14px 28px;
+    background: transparent;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    cursor: none;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Scroll indicator */
+  .scroll-indicator {
+    position: absolute; bottom: 40px; left: 48px;
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    animation: fadeIn 1s 0.8s both;
+  }
+  .scroll-line {
+    width: 40px; height: 1px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    position: relative; overflow: hidden;
+  }
+  .scroll-line::after {
+    content: ''; position: absolute; inset: 0;
+    background: var(--accent);
+    transform: translateX(-100%);
+    animation: slide 2s infinite;
+  }
+  @keyframes slide { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+
+  /* Sections */
+  section { padding: 100px 48px; position: relative; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(36px, 5vw, 58px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 60px;
+  }
+
+  /* Skills */
+  .skills-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 60px;
+  }
+  .skill-cell {
+    background: var(--card);
+    padding: 32px 28px;
+    transition: background 0.2s;
+  }
+  .skill-cell:hover { background: #1c1c28; }
+  .skill-cell-icon {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  .skill-cell-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .skill-cell-items {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.9;
+  }
+
+  /* Projects */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .project-card {
+    background: var(--card);
+    padding: 40px 36px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+  }
+  .project-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  .project-card:hover { background: #1a1a26; }
+  .project-card:hover::before { transform: scaleX(1); }
+
+  .project-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+  }
+  .project-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    line-height: 1.2;
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+  .project-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 24px;
+    font-weight: 400;
+  }
+  .project-tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 28px;
+  }
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 2px;
+  }
+  .tag.accent { border-color: rgba(110,231,247,0.3); color: var(--accent); background: rgba(110,231,247,0.05); }
+  .tag.purple { border-color: rgba(167,139,250,0.3); color: var(--accent2); background: rgba(167,139,250,0.05); }
+  .tag.pink { border-color: rgba(244,114,182,0.3); color: var(--accent3); background: rgba(244,114,182,0.05); }
+
+  .project-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .project-link::after { content: '→'; transition: transform 0.2s; }
+  .project-card:hover .project-link::after { transform: translateX(4px); }
+
+  /* Highlight metric */
+  .metric {
+    display: inline-block;
+    font-family: 'DM Serif Display', serif;
+    font-size: 13px;
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  /* Experience */
+  .exp-section { background: var(--bg); }
+  .exp-entry {
+    border-left: 1px solid var(--border);
+    padding: 0 0 56px 40px;
+    position: relative;
+    max-width: 760px;
+  }
+  .exp-entry::before {
+    content: '';
+    position: absolute; left: -5px; top: 6px;
+    width: 9px; height: 9px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--accent);
+  }
+  .exp-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .exp-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .exp-company {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    font-weight: 400;
+  }
+  .exp-bullets { list-style: none; }
+  .exp-bullets li {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 8px;
+    padding-left: 16px;
+    position: relative;
+    font-weight: 400;
+  }
+  .exp-bullets li::before {
+    content: '—';
+    position: absolute; left: 0;
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* Contact */
+  .contact-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  .contact-section h2 { margin-bottom: 16px; }
+  .contact-sub {
+    color: var(--muted);
+    font-size: 16px;
+    margin-bottom: 48px;
+    font-weight: 400;
+  }
+  .contact-links {
+    display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;
+    margin-top: 48px;
+  }
+  .contact-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 12px 20px;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .contact-link:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Footer */
+  footer {
+    padding: 24px 48px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer span {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* Fade in on scroll */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <div class="nav-logo">FS — Portfolio</div>
+  <div class="nav-links">
+    <a href="#projects">Work</a>
+    <a href="#skills">Skills</a>
+    <a href="#experience">Experience</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Available for opportunities</div>
+    <h1>Fazal<br/><em>Shaik</em></h1>
+    <p class="hero-sub">Frontend Software Engineer building intuitive, secure interfaces for distributed systems at scale. Based in Michigan — targeting AWS IAM & cloud security products.</p>
+    <div class="hero-ctas">
+      <a href="#projects" class="btn-primary">View My Work</a>
+      <a href="mailto:fazal.shaik2025@gmail.com" class="btn-ghost">Get In Touch</a>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    Scroll to explore
+  </div>
+</section>
+
+<!-- Skills -->
+<section class="skills-section" id="skills">
+  <div class="section-label">Capabilities</div>
+  <h2>What I Build</h2>
+  <div class="skills-grid reveal">
+    <div class="skill-cell">
+      <div class="skill-cell-icon">⬡</div>
+      <div class="skill-cell-title">Frontend</div>
+      <div class="skill-cell-items">JavaScript · TypeScript<br/>React · HTML5 · CSS3<br/>Responsive Design<br/>Web Security</div>
+    </div>
+    <div class="skill-cell">
+      <div class="skill-cell-icon">◈</div>
+      <div class="skill-cell-title">Backend & APIs</div>
+      <div class="skill-cell-items">Java · Spring Boot<br/>Python · FastAPI<br/>REST · GraphQL<br/>OpenAPI/Swagger</div>
+    </div>
+    <div class="skill-cell">
+      <div class="skill-cell-icon">◻</div>
+      <div class="skill-cell-title">Cloud & Infra</div>
+      <div class="skill-cell-items">AWS (EKS, S3, Lambda)<br/>Docker · Kubernetes<br/>Terraform · CI/CD<br/>Blue/Green Deploy</div>
+    </div>
+    <div class="skill-cell">
+      <div class="skill-cell-icon">◬</div>
+      <div class="skill-cell-title">Architecture</div>
+      <div class="skill-cell-items">Distributed Systems<br/>Microservices<br/>Factory · Strategy<br/>Observer · MVC</div>
+    </div>
+    <div class="skill-cell">
+      <div class="skill-cell-icon">◎</div>
+      <div class="skill-cell-title">Observability</div>
+      <div class="skill-cell-items">OpenTelemetry<br/>Prometheus · Grafana<br/>Distributed Tracing<br/>SonarQube</div>
+    </div>
+    <div class="skill-cell">
+      <div class="skill-cell-icon">◷</div>
+      <div class="skill-cell-title">Process</div>
+      <div class="skill-cell-items">Agile / Scrum<br/>Full SDLC<br/>Code Review<br/>Team Mentoring</div>
+    </div>
+  </div>
+</section>
+
+<!-- Projects -->
+<section id="projects" style="background: var(--bg);">
+  <div class="section-label">Selected Work</div>
+  <h2>Projects</h2>
+  <div class="projects-grid reveal">
+
+    <div class="project-card">
+      <div class="project-num">01 / Frontend Interface</div>
+      <div class="project-title">Multimodal Device UI Platform</div>
+      <div class="project-desc">
+        Designed and shipped JavaScript/TypeScript interfaces for LLM-powered screen-based devices, translating complex distributed system states into clean, accessible user experiences. Processing <span class="metric">12M+ records/day.</span>
+      </div>
+      <div class="project-tags">
+        <span class="tag accent">TypeScript</span>
+        <span class="tag accent">React</span>
+        <span class="tag purple">AWS EKS</span>
+        <span class="tag">REST API</span>
+        <span class="tag">LLM</span>
+      </div>
+      <div class="project-link">View Case Study</div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-num">02 / API Design</div>
+      <div class="project-title">Cross-Team API Contract System</div>
+      <div class="project-desc">
+        Independently architected external-facing REST APIs and OpenAPI/Swagger contracts adopted across <span class="metric">3 cross-functional teams</span>, accelerating frontend-to-backend integration timelines significantly.
+      </div>
+      <div class="project-tags">
+        <span class="tag accent">JavaScript</span>
+        <span class="tag purple">OpenAPI</span>
+        <span class="tag pink">Swagger</span>
+        <span class="tag">FastAPI</span>
+        <span class="tag">GraphQL</span>
+      </div>
+      <div class="project-link">View Case Study</div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-num">03 / Distributed Systems</div>
+      <div class="project-title">Microservices Re-Platform</div>
+      <div class="project-desc">
+        Led re-platforming of a monolithic pipeline into distributed microservices architecture. Built a service integration SDK that reduced inter-service complexity by <span class="metric">40%</span>, supporting scalable frontend data delivery.
+      </div>
+      <div class="project-tags">
+        <span class="tag accent">Java</span>
+        <span class="tag purple">Spring Boot</span>
+        <span class="tag pink">Kubernetes</span>
+        <span class="tag">Terraform</span>
+        <span class="tag">Docker</span>
+      </div>
+      <div class="project-link">View Case Study</div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-num">04 / DevOps & Reliability</div>
+      <div class="project-title">Zero-Downtime Deployment System</div>
+      <div class="project-desc">
+        Built Terraform-automated EKS blue/green deployment modules cutting rollback time by <span class="metric">70%</span>. Integrated OpenTelemetry tracing reducing root-cause analysis time by <span class="metric">60%</span>.
+      </div>
+      <div class="project-tags">
+        <span class="tag accent">AWS EKS</span>
+        <span class="tag purple">Terraform</span>
+        <span class="tag pink">OpenTelemetry</span>
+        <span class="tag">Prometheus</span>
+        <span class="tag">Grafana</span>
+      </div>
+      <div class="project-link">View Case Study</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Experience -->
+<section class="exp-section" id="experience">
+  <div class="section-label">Background</div>
+  <h2>Experience</h2>
+
+  <div class="exp-entry reveal">
+    <div class="exp-date">Apr 2024 — Present</div>
+    <div class="exp-title">Software Development Engineer</div>
+    <div class="exp-company">Infinite Gateway · Michigan, United States</div>
+    <ul class="exp-bullets">
+      <li>Designed JS/TS device interfaces translating distributed system states into accessible web experiences</li>
+      <li>Built scalable frontend rendering services for multimodal LLM platform using Factory & Observer patterns</li>
+      <li>Authored OpenAPI/Swagger contracts adopted across 3 cross-functional teams</li>
+      <li>Engineered fault-tolerant AWS EKS microservices processing 12M+ records/day with 30% perf gain</li>
+      <li>Reduced rollback time by 70% with Terraform-automated blue/green deployments</li>
+      <li>Enforced web security best practices, >90% SonarQube coverage, mentored 2 junior engineers</li>
+    </ul>
+  </div>
+
+  <div style="margin-top: 20px; padding-left: 40px;" class="reveal">
+    <div class="section-label" style="margin-bottom: 16px;">Education</div>
+    <div style="margin-bottom: 10px;">
+      <div style="font-weight: 700; font-size: 16px;">M.S. Management Information Systems</div>
+      <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">Central Michigan University, MI</div>
+    </div>
+    <div style="margin-bottom: 20px;">
+      <div style="font-weight: 700; font-size: 16px;">B.Tech Information Technology</div>
+      <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">Malla Reddy Engineering College, India</div>
+    </div>
+    <div style="font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.1em;">
+      AWS (EKS, S3, Lambda) · Azure Data Fundamentals · Kubernetes · Terraform
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="contact-section" id="contact">
+  <div class="section-label">Let's Connect</div>
+  <h2>Open to<br/><em style="font-family:'DM Serif Display',serif;font-style:italic;color:var(--accent)">opportunities</em></h2>
+  <p class="contact-sub">Actively targeting frontend SDE roles at AWS. Let's talk.</p>
+  <a href="mailto:fazal.shaik2025@gmail.com" class="btn-primary">fazal.shaik2025@gmail.com</a>
+  <div class="contact-links">
+    <a href="https://linkedin.com/in/fazalshaik" class="contact-link" target="_blank">LinkedIn</a>
+    <a href="https://github.com/fazalshaik" class="contact-link" target="_blank">GitHub</a>
+    <a href="tel:+19893306780" class="contact-link">+1 (989) 330-6780</a>
+  </div>
+</section>
+
+<footer>
+  <span>Fazal Shaik · Frontend Engineer</span>
+  <span>Michigan, United States · 2025</span>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    rx += (e.clientX - rx) * 0.12;
+    ry += (e.clientY - ry) * 0.12;
+    ring.style.left = e.clientX + 'px';
+    ring.style.top = e.clientY + 'px';
+  });
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(2)';
+      ring.style.opacity = '0';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+      ring.style.opacity = '0.5';
+    });
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
